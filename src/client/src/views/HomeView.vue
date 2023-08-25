@@ -2,7 +2,18 @@
     <main>
         <h1>Secret Santa</h1>
         <div v-for="recipient of recipients" :key="recipient.id">
-            <input v-model="recipient.name" type="text" />
+            <v-text-field
+                id="recName"
+                v-model="recipient.name"
+                name="recName"
+                label="Recipient Name"
+                :rules="[rules.required]"
+            ></v-text-field>
+            <v-text-field
+                v-model="recipient.email"
+                label="E-mail"
+                :rules="[rules.required, rules.email]"
+            ></v-text-field>
             <input v-model="recipient.email" type="email" />
         </div>
         <!-- <v-btn @click="addRecipient">
@@ -26,6 +37,14 @@
     // Component Definition
     //------------------------------------------------------------------------------------------------------------------
     const recipients = ref<Recipient[]>([]);
+
+    const rules = {
+        required: (value: string) => !!value || "Required.",
+        email: (value: string) => {
+            const valid = /.+@.+\..+/.test(value);
+            return valid || "Email must be valid.";
+        },
+    };
 
     //------------------------------------------------------------------------------------------------------------------
     // Functions
