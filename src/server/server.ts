@@ -4,15 +4,16 @@ import { AddressInfo } from 'net';
 import path from 'path';
 import program from './utils/args';
 import { serveIndex } from './routes/utils/router';
+import { EmailRoutes } from './routes';
+import bodyParser from 'body-parser';
 
 const app = express();
 const PORT = 3000;
 
-// eslint-disable-next-line
-// @ts-ignore - this is a temporary fix for the express type error
-app.get('/api/hello', (req, res) => {
-  res.send('Hello World?!');
-});
+app.use(bodyParser.json());
+
+const emailRoutes = new EmailRoutes(app);
+emailRoutes.init();
 
 async function init() {
   //------------------------------------------------------------------------------------------------------------------

@@ -11,7 +11,7 @@
         <v-btn color="success" @click="addRecipient">
             Add Recipient
         </v-btn>
-        <v-btn color="success">
+        <v-btn color="success" @click="sendToRecipients">
             Submit
         </v-btn>
     </main>
@@ -20,6 +20,7 @@
 <script setup lang="ts">
     import { onMounted, ref } from "vue";
     import { Recipient } from "../lib/interfaces/recipient";
+    import axios from "axios";
 
     //------------------------------------------------------------------------------------------------------------------
     // Component Definition
@@ -35,6 +36,10 @@
             name: "",
             email: "",
         });
+    }
+
+    async function sendToRecipients() {
+        await axios.post("/api/sendEmail", recipients.value);
     }
 
     //------------------------------------------------------------------------------------------------------------------
