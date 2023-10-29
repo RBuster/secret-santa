@@ -1,95 +1,130 @@
-
-
 <template>
-    <div>
-        <header>
-            <img alt="Vue logo" class="logo" :src="logoURL" width="125" height="125" />
-
-            <div class="wrapper">
-                <HelloWorld msg="You did it!"></HelloWorld>
-
-                <nav>
-                    <RouterLink to="/">
-                        Home
-                    </RouterLink>
-                    <RouterLink to="/about">
-                        About
-                    </RouterLink>
-                </nav>
+    <main>
+        <h1>Secret Santa</h1>
+        <div v-if="sent">
+            <h2>I did it!</h2>
+            <p>
+                Somehow this app still works. Your Secret Santa invitations have been
+                sent. Please tell your family/friends to check their email for spam.
+            </p>
+        </div>
+        <v-progress-circular v-if="sending" indeterminate></v-progress-circular>
+        <div v-if="!sent && !sending">
+            <div class="d-lg-flex justify-space-between w-100">
+                <div class="mr-4 w-100">
+                    <v-text-field
+                        id="recName"
+                        v-model="recipient.name"
+                        name="recName"
+                        label="Recipient Name"
+                        :rules="[rules.nameValidator]"
+                    ></v-text-field>
+                    <v-text-field
+                        v-model="recipient.email"
+                        label="E-mail"
+                        :rules="[rules.emailValidator]"
+                    ></v-text-field>
+                </div>
+                <div class="w-100">
+                    <RecipientList :recipients="recipients"></RecipientList>
+                </div>
             </div>
-        </header>
-
-        <RouterView></RouterView>
-    </div>
+            <v-btn-group
+                secondary
+                divided
+                variant="outlined"
+                class="w-100 justify-end"
+            >
+                <v-btn
+                    class="mt-1 bg-white text-black"
+                    :disabled="!canAddRecipient()"
+                    @click="addRecipient"
+                >
+                    Add Recipient
+                </v-btn>
+                <v-btn
+                    class="mt-1 bg-white text-black"
+                    :disabled="recipients.length <= 0"
+                    @click="sendToRecipients"
+                >
+                    Submit
+                </v-btn>
+            </v-btn-group>
+        </div>
+    </main>
 </template>
 
-<style scoped>
-header {
-  line-height: 1.5;
-  max-height: 100vh;
-}
-
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
-
-nav {
-  width: 100%;
-  font-size: 12px;
-  text-align: center;
-  margin-top: 2rem;
-}
-
-nav a.router-link-exact-active {
-  color: var(--color-text);
-}
-
-nav a.router-link-exact-active:hover {
-  background-color: transparent;
-}
-
-nav a {
-  display: inline-block;
-  padding: 0 1rem;
-  border-left: 1px solid var(--color-border);
-}
-
-nav a:first-of-type {
-  border: 0;
-}
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-
-  nav {
-    text-align: left;
-    margin-left: -1rem;
-    font-size: 1rem;
-
-    padding: 1rem 0;
-    margin-top: 1rem;
-  }
-}
-</style>
-
 <script setup lang="ts">
-    import { RouterLink, RouterView } from 'vue-router'
-    import HelloWorld from './components/HelloWorld.vue'
-    import logo from './assets/logo.svg'
-    const logoURL = logo;
+    import { ref } from "vue";
+    import { Recipient } from "./lib/interfaces/recipient";
+    import axios from "axios";
+    import RecipientList from "./components/RecipientList.vue";
+
+    //------------------------------------------------------------------------------------------------------------------
+    // Component Definition
+    //------------------------------------------------------------------------------------------------------------------
+    const recipients = ref<Recipient[]>([]);
+
+    const rules = {
+        nameValidator: (value: string) => nameInputValid(value),
+        emailValidator: (value: string) => value === "" || emailInputValid(value),
+    };
+
+    //------------------------------------------------------------------------------------------------------------------
+    // Refs
+    //------------------------------------------------------------------------------------------------------------------
+    const recipient = ref<Recipient>({
+        id: 0,
+        name: "",
+        email: "",
+    });
+
+    const sending = ref(false);
+
+    const sent = ref(false);
+
+    //------------------------------------------------------------------------------------------------------------------
+    // Functions
+    //------------------------------------------------------------------------------------------------------------------
+    function addRecipient() {
+        recipients.value.push({
+            id: recipients.value.length + 1,
+            name: recipient.value.name,
+            email: recipient.value.email,
+        });
+        recipient.value = {
+            id: -1,
+            name: "",
+            email: "",
+        };
+    }
+
+    async function sendToRecipients() {
+        if (recipients.value.length > 0) {
+            sending.value = true;
+            const response = await axios.post("/api/sendEmail", recipients.value);
+            console.log(response.data);
+            sending.value = false;
+            sent.value = true;
+        }
+    }
+
+    function emailInputValid(value: string) {
+        const valid = /.+@.+\..+/.test(value);
+        return valid || "Email must be valid.";
+    }
+
+    function nameInputValid(value: string) {
+        if (recipient.value.email === "") {
+            return true;
+        }
+        return !!value || "Required.";
+    }
+
+    function canAddRecipient() {
+        return (
+            emailInputValid(recipient.value.email) === true &&
+            nameInputValid(recipient.value.name) === true
+        );
+    }
 </script>
