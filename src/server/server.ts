@@ -8,7 +8,7 @@ import { EmailRoutes } from './routes';
 import bodyParser from 'body-parser';
 
 const app = express();
-const PORT = 3000;
+const PORT = 8080;
 
 app.use(bodyParser.json());
 
