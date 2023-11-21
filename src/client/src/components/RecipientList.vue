@@ -20,10 +20,10 @@
 </template>
 
 <script setup lang="ts">
-    import { Recipient } from "../lib/interfaces/recipient";
+    import { Participant } from '../lib/interfaces/recipient';
 
     interface Props {
-        recipients?: Recipient[];
+        recipients?: Participant[];
     }
 
     defineProps<Props>();

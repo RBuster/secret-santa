@@ -7,8 +7,12 @@ import { serveIndex } from './routes/utils/router';
 import { EmailRoutes } from './routes';
 import bodyParser from 'body-parser';
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+require('dotenv').config();
+
 const app = express();
-const PORT = 8080;
+//azure wants things to be set on 8080, set to whatever you want for local dev
+const PORT = process.env.PORT || 8080;
 
 app.use(bodyParser.json());
 
@@ -31,7 +35,7 @@ async function init() {
       html: serveIndex,
       json: (_req, resp) => {
         resp.status(404).end();
-      }
+      },
     });
   });
 

@@ -1,12 +1,19 @@
 <template>
     <main>
         <h1>Secret Santa</h1>
-        <div v-if="sent">
+        <div v-if="sent && !error">
             <h2>I did it!</h2>
             <p>
                 Somehow this app still works. Your Secret Santa invitations have been
                 sent. Please tell your family/friends to check their email for spam.
             </p>
+        </div>
+        <div v-if="error">
+            <v-alert
+                color="error"
+                title="Well shit"
+                text="An error occurred, please reload the page and try again later"
+            ></v-alert>
         </div>
         <v-progress-circular v-if="sending" indeterminate></v-progress-circular>
         <div v-if="!sent && !sending">
@@ -55,33 +62,33 @@
 </template>
 
 <script setup lang="ts">
-    import { ref } from "vue";
-    import { Recipient } from "./lib/interfaces/recipient";
-    import axios from "axios";
-    import RecipientList from "./components/RecipientList.vue";
+    import { ref } from 'vue';
+    import { Participant } from './lib/interfaces/recipient';
+    import axios from 'axios';
+    import RecipientList from './components/RecipientList.vue';
 
     //------------------------------------------------------------------------------------------------------------------
     // Component Definition
     //------------------------------------------------------------------------------------------------------------------
-    const recipients = ref<Recipient[]>([]);
+    const recipients = ref<Participant[]>([]);
 
     const rules = {
         nameValidator: (value: string) => nameInputValid(value),
-        emailValidator: (value: string) => value === "" || emailInputValid(value),
+        emailValidator: (value: string) => value === '' || emailInputValid(value),
     };
 
     //------------------------------------------------------------------------------------------------------------------
     // Refs
     //------------------------------------------------------------------------------------------------------------------
-    const recipient = ref<Recipient>({
+    const recipient = ref<Participant>({
         id: 0,
-        name: "",
-        email: "",
+        name: '',
+        email: '',
     });
 
     const sending = ref(false);
-
     const sent = ref(false);
+    const error = ref(false);
 
     //------------------------------------------------------------------------------------------------------------------
     // Functions
@@ -94,31 +101,36 @@
         });
         recipient.value = {
             id: -1,
-            name: "",
-            email: "",
+            name: '',
+            email: '',
         };
     }
 
     async function sendToRecipients() {
         if (recipients.value.length > 0) {
             sending.value = true;
-            const response = await axios.post("/api/sendEmail", recipients.value);
-            console.log(response.data);
-            sending.value = false;
-            sent.value = true;
+            try {
+                await axios.post('/api/sendEmails', recipients.value);
+                sent.value = true;
+            } catch (e) {
+                console.error(e);
+                error.value = true;
+            } finally {
+                sending.value = false;
+            }
         }
     }
 
     function emailInputValid(value: string) {
         const valid = /.+@.+\..+/.test(value);
-        return valid || "Email must be valid.";
+        return valid || 'Email must be valid.';
     }
 
     function nameInputValid(value: string) {
-        if (recipient.value.email === "") {
+        if (recipient.value.email === '') {
             return true;
         }
-        return !!value || "Required.";
+        return !!value || 'Required.';
     }
 
     function canAddRecipient() {
