@@ -16,7 +16,7 @@ export class EmailRA {
       content: {
         subject: 'Secret Santa',
         plainText: `Hey ${participant.name}, you are the secret santa for ${participant.receiver.name}. Their email is ${participant.receiver.email} if you need to look em up.
-              Give em something good, or don't, I'm a robot not a cop.`,
+        Give em something good, or don't, I'm a robot not a cop.`,
       },
       recipients: {
         to: [
