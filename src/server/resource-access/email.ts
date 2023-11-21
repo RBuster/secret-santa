@@ -6,6 +6,7 @@ export class EmailRA {
   constructor() {
     const connectionString =
       process.env.COMMUNICATION_SERVICES_CONNECTION_STRING || '';
+    console.log(connectionString);
     this.emailClient = new EmailClient(connectionString);
   }
   public async sendEmail(
