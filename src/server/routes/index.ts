@@ -3,6 +3,14 @@ import { EmailRA } from '../resource-access/email';
 import { Participant } from '../../client/src/lib/interfaces/recipient';
 import { EmailUtil } from '../utils/email';
 
+interface SendEmailBody {
+  participants: Participant[];
+  gameRules: {
+    budget: [number, number];
+    useBudget: boolean;
+  };
+}
+
 export class EmailRoutes {
   private _app: Express;
   private _emailRA: EmailRA;
@@ -22,11 +30,11 @@ export class EmailRoutes {
     });
 
     this._app.post('/api/sendEmails', (req, res) => {
-      const body = req.body as Participant[];
-      const shuffledParticipants = this._emailUtil.assignReceivers(body);
+      const body = req.body as SendEmailBody;
+      const shuffledParticipants = this._emailUtil.assignReceivers(body.participants);
       const responses: boolean[] = [];
       shuffledParticipants.map(async (recipient) => {
-        responses.push(await this._emailRA.sendEmail(recipient));
+        responses.push(await this._emailRA.sendEmail(recipient, body.gameRules));
       });
       if (responses.includes(false)) {
         res.status(500);

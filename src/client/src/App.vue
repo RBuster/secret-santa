@@ -33,7 +33,40 @@
                     ></v-text-field>
                 </div>
                 <div class="w-100">
-                    <RecipientList :recipients="recipients"></RecipientList>
+                    <RecipientList :recipients="recipients"></RecipientList><v-checkbox
+                        v-model="gameRules.useBudget"
+                        label="Use budget?"
+                    ></v-checkbox>
+                    <v-range-slider
+                        v-if="gameRules.useBudget"
+                        v-model="gameRules.budget"
+                        label="Budget"
+                        :min="0"
+                        :step="1"
+                    >
+                        <template #prepend>
+                            <v-text-field
+                                v-model="gameRules.budget[0]"
+                                hide-details
+                                single-line
+                                type="number"
+                                variant="outlined"
+                                density="compact"
+                                style="width: 100px"
+                            ></v-text-field>
+                        </template>
+                        <template #append>
+                            <v-text-field
+                                v-model="gameRules.budget[1]"
+                                hide-details
+                                single-line
+                                type="number"
+                                variant="outlined"
+                                style="width: 100px"
+                                density="compact"
+                            ></v-text-field>
+                        </template>
+                    </v-range-slider>
                 </div>
             </div>
             <v-btn-group
@@ -66,6 +99,7 @@
     import { Participant } from './lib/interfaces/recipient';
     import axios from 'axios';
     import RecipientList from './components/RecipientList.vue';
+    import { GameRules } from './lib/interfaces/gameRules';
 
     //------------------------------------------------------------------------------------------------------------------
     // Component Definition
@@ -85,6 +119,11 @@
         name: '',
         email: '',
     });
+
+    const gameRules = ref<GameRules>({
+        useBudget: false,
+        budget: [20, 50]
+    })
 
     const sending = ref(false);
     const sent = ref(false);
@@ -110,7 +149,7 @@
         if (recipients.value.length > 0) {
             sending.value = true;
             try {
-                await axios.post('/api/sendEmails', recipients.value);
+                await axios.post('/api/sendEmails', { participants: recipients.value, gameRules: gameRules.value });
                 sent.value = true;
             } catch (e) {
                 console.error(e);
