@@ -33,10 +33,11 @@
                     ></v-text-field>
                 </div>
                 <div class="w-100">
-                    <RecipientList :recipients="recipients"></RecipientList><v-checkbox
+                    <RecipientList :recipients="recipients"></RecipientList>
+                    <v-switch
                         v-model="gameRules.useBudget"
                         label="Use budget?"
-                    ></v-checkbox>
+                    ></v-switch>
                     <v-range-slider
                         v-if="gameRules.useBudget"
                         v-model="gameRules.budget"
