@@ -1,15 +1,7 @@
 import { Express } from 'express';
 import { EmailRA } from '../resource-access/email';
-import { Participant } from '../../client/src/lib/interfaces/recipient';
 import { EmailUtil } from '../utils/email';
-
-interface SendEmailBody {
-  participants: Participant[];
-  gameRules: {
-    budget: [number, number];
-    useBudget: boolean;
-  };
-}
+import { SendEmailBody } from '../../client/src/lib/interfaces/sendEmailBody';
 
 export class EmailRoutes {
   private _app: Express;

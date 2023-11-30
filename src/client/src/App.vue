@@ -101,6 +101,7 @@
     import axios from 'axios';
     import RecipientList from './components/RecipientList.vue';
     import { GameRules } from './lib/interfaces/gameRules';
+import { SendEmailBody } from './lib/interfaces/sendEmailBody';
 
     //------------------------------------------------------------------------------------------------------------------
     // Component Definition
@@ -150,7 +151,11 @@
         if (recipients.value.length > 0) {
             sending.value = true;
             try {
-                await axios.post('/api/sendEmails', { participants: recipients.value, gameRules: gameRules.value });
+                const payload: SendEmailBody = {
+                    participants: recipients.value,
+                    gameRules: gameRules.value
+                };
+                await axios.post('/api/sendEmails', payload);
                 sent.value = true;
             } catch (e) {
                 console.error(e);
