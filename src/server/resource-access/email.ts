@@ -1,5 +1,6 @@
 import { EmailClient } from '@azure/communication-email';
 import { ParticipantWithReceiver } from '../../client/src/lib/interfaces/recipient';
+import { GameRules } from '../../client/src/lib/interfaces/gameRules';
 
 export class EmailRA {
   emailClient: EmailClient;
@@ -9,14 +10,19 @@ export class EmailRA {
     this.emailClient = new EmailClient(connectionString);
   }
   public async sendEmail(
-    participant: ParticipantWithReceiver
+    participant: ParticipantWithReceiver,
+    gameRules: GameRules
   ): Promise<boolean> {
+    const budgetMessage = gameRules.useBudget
+      ? `The organizer has asked that you keep a budget of between $${gameRules.budget[0]} and $${gameRules.budget[1]}.`
+      : 'The organizer has not set a budget for this exchange.';
+
     const message = {
       senderAddress: process.env.FROMADDRESS || '',
       content: {
         subject: 'Secret Santa',
         plainText: `Hey ${participant.name}, you are the secret santa for ${participant.receiver.name}. Their email is ${participant.receiver.email} if you need to look em up.
-        Give em something good, or don't, I'm a robot not a cop.`,
+        Give em something good, or don't, I'm a robot not a cop. ${budgetMessage}`,
       },
       recipients: {
         to: [
