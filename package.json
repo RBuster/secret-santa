@@ -6,7 +6,7 @@
     "start": "node ./dist/src/server/server.js",
     "dev": "tsc && node ./dist/src/server/server.js --dev",
     "build": "tsc && vite build",
-    "lint:fix": "eslint --ext *.ts,.js,.vue --fix config.ts src/",
+    "lint": "eslint src",
     "preview": "npm run start && vite preview"
   },
   "keywords": [],
@@ -37,7 +37,6 @@
     "concurrently": "^10.0.6",
     "eslint": "^10.13.0",
     "eslint-plugin-vue": "^10.11.1",
-    "nodemon": "^3.1.14",
     "typescript": "^6.0.3"
   }
 }

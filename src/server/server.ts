@@ -6,9 +6,7 @@ import program from './utils/args';
 import { serveIndex } from './routes/utils/router';
 import { EmailRoutes } from './routes';
 import bodyParser from 'body-parser';
-
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-require('dotenv').config();
+import 'dotenv/config';
 
 const app = express();
 //azure wants things to be set on 8080, set to whatever you want for local dev
@@ -30,7 +28,7 @@ async function init() {
   // Set up our application routes
 
   // Serve index.html for any html requests, but 404 everything else.
-  app.get('*', (_request, response) => {
+  app.get('/{*path}', (_request, response) => {
     response.format({
       html: serveIndex,
       json: (_req, resp) => {

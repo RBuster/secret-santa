@@ -1,4 +1,4 @@
-import { Participant } from './recipient';
+import { Participant } from './recipient.js';
 
 export interface SendEmailBody {
   participants: Array<Participant>;
