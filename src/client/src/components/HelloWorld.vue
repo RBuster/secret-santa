@@ -44,7 +44,7 @@ h3 {
 
     onMounted(() => {
         axios.get('/api/hello').then((res) => {
-            console.log(res.data);
+            console.info(res.data);
         });
     });
 </script>

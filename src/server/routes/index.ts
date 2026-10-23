@@ -1,7 +1,9 @@
-import { Express } from 'express';
+import type { Express } from 'express';
 import { EmailRA } from '../resource-access/email';
 import { EmailUtil } from '../utils/email';
-import { SendEmailBody } from '../../client/src/lib/interfaces/sendEmailBody';
+import type { SendEmailBody } from '../../client/src/lib/interfaces/sendEmailBody.js' with {
+  'resolution-mode': 'import',
+};
 
 export class EmailRoutes {
   private _app: Express;

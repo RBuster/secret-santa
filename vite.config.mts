@@ -2,7 +2,7 @@ import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
 
 const PORT = 3001;
-// https://vitejs.dev/config/
+// https://vite.dev/config/
 export default defineConfig({
   preview: {
     port: PORT
